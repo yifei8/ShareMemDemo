@@ -28,7 +28,7 @@ public class BitmapUtil {
         return baos.toByteArray();
     }
 
-    public static Bitmap Bytes2Bimap(byte[] b) {
+    public static Bitmap Bytes2Bitmap(byte[] b) {
         if (b.length != 0) {
             return BitmapFactory.decodeByteArray(b, 0, b.length);
         } else {

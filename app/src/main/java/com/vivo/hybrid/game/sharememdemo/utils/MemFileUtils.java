@@ -36,41 +36,6 @@ public class MemFileUtils {
         return null;
     }
 
-    /**
-     * 打开共享内存，一般是一个地方创建了一块共享内存
-     * 另一个地方持有描述这块共享内存的文件描述符，调用
-     * 此方法即可获得一个描述那块共享内存的MemoryFile
-     * 对象
-     * @param fd 文件描述
-     * @param length 共享内存的大小
-     * @param mode PROT_READ = 0x1只读方式打开,
-     *             PROT_WRITE = 0x2可写方式打开，
-     *             PROT_WRITE|PROT_READ可读可写方式打开
-     * @return MemoryFile
-     */
-    public static MemoryFile openMemoryFile(FileDescriptor fd,int length,int mode){
-        MemoryFile memoryFile = null;
-        try {
-            memoryFile = new MemoryFile("tem",1);
-            memoryFile.close();
-            Class<?> c = MemoryFile.class;
-            Method native_mmap = null;
-            Method[] ms = c.getDeclaredMethods();
-            for(int i = 0;ms != null&&i<ms.length;i++){
-                if(ms[i].getName().equals("native_mmap")){
-                    native_mmap = ms[i];
-                }
-            }
-            ReflectUtil.setField("android.os.MemoryFile", memoryFile, "mFD", fd);
-            ReflectUtil.setField("android.os.MemoryFile",memoryFile,"mLength",length);
-            long address = (long) ReflectUtil.invokeMethod( null, native_mmap, fd, length, mode);
-            ReflectUtil.setField("android.os.MemoryFile", memoryFile, "mAddress", address);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return memoryFile;
-    }
-
     public static MemoryFile openMemoryFile(ParcelFileDescriptor pfd, int length, int mode) {
         if (pfd == null) {
             throw new IllegalArgumentException("ParcelFileDescriptor is null");
@@ -97,7 +62,7 @@ public class MemFileUtils {
      *               PROT_WRITE|PROT_READ可读可写方式打开
      * @return MemoryFile
      */
-    public static MemoryFile openMemoryFile2(FileDescriptor fd, int length, int mode) {
+    public static MemoryFile openMemoryFile(FileDescriptor fd, int length, int mode) {
         if (mode != OPEN_READONLY && mode != OPEN_READWRITE)
             throw new IllegalArgumentException("invalid mode, only support OPEN_READONLY and OPEN_READWRITE");
 

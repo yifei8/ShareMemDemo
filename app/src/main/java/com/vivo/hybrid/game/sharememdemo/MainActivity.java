@@ -25,11 +25,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         iv = findViewById(R.id.iv);
-        Button btn_bind = findViewById(R.id.btn_send_msg);
-        Button btn_unbind = findViewById(R.id.btn_take_snapshot);
-        btn_bind.setOnClickListener(this);
-        btn_unbind.setOnClickListener(this);
-
+        findViewById(R.id.btn_send_msg).setOnClickListener(this);
+        findViewById(R.id.btn_take_snapshot).setOnClickListener(this);
+        findViewById(R.id.btn_take_snapshot2).setOnClickListener(this);
         client = MemFetchClient.getInstance();
 
         bind();
@@ -48,6 +46,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             client.sendTestMessageForCallback();
         } else if (id == R.id.btn_take_snapshot) {
             client.takeSnapshot(new MemFetchClient.OnTakeSnapshotCb() {
+                @Override
+                public void callback(Bitmap bitmap) {
+                    if (bitmap != null) {
+                        iv.setImageBitmap(bitmap);
+                    } else {
+                        Toast.makeText(MainActivity.this, "bitmap is null", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        } else if (id == R.id.btn_take_snapshot2) {
+            client.takeSnapshot2(new MemFetchClient.OnTakeSnapshotCb() {
                 @Override
                 public void callback(Bitmap bitmap) {
                     if (bitmap != null) {

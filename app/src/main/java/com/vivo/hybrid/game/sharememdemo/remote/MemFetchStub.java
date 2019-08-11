@@ -80,9 +80,7 @@ public class MemFetchStub extends IMemAIDL.Stub implements RemoteContract.ToClie
     public void onSnapshotCallback(Bitmap bitmap) {
         if (snapshotCallback != null) {
             try {
-                byte[] buffer = BitmapUtil.Bitmap2ByteArray(bitmap);
-//                byte[] buffer = new byte[1024];
-//                Arrays.fill(buffer, (byte) 1);
+                byte[] buffer = BitmapUtil.Bitmap2Bytes(bitmap);
                 writeBitmap2Mem(buffer);
                 snapshotCallback.onSnapshotCallback(parcelFileDescriptor, buffer.length);
             } catch (RemoteException e) {
@@ -118,9 +116,9 @@ public class MemFetchStub extends IMemAIDL.Stub implements RemoteContract.ToClie
              * 另外，由于Ashmem默认都是"unpin"的，因此申请的内存在某个时间点内都可能会被回收掉，这个时候是不可以再读写了
              *
              */
-            if (shareMem != null) {
+            /*if (shareMem != null) {
                 shareMem.allowPurging(false);
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }

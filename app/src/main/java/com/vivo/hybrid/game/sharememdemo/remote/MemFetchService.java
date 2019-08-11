@@ -39,18 +39,25 @@ public class MemFetchService extends Service implements RemoteContract.FromClien
             if (bitmap != null) {
                 toClient.onSnapshotCallback(bitmap);
             }
+        } if ("takeSnapshot2".endsWith(json)) {
+            Bitmap bitmap = takeSnapshot2();
+            if (bitmap != null) {
+                toClient.onSnapshotCallback(bitmap);
+            }
         } else if ("getMessage".endsWith(json)) {
             String message = getServiceMessage();
             if (!TextUtils.isEmpty(message)) {
                 toClient.sendToClientMessage(message);
             }
-        } else {
-            Toast.makeText(this, "action is not match", Toast.LENGTH_SHORT).show();
         }
     }
 
     private Bitmap takeSnapshot() {
         return BitmapFactory.decodeResource(getResources(), R.drawable.tt);
+    }
+
+    private Bitmap takeSnapshot2() {
+        return BitmapFactory.decodeResource(getResources(), R.drawable.aa);
     }
 
     private String getServiceMessage() {

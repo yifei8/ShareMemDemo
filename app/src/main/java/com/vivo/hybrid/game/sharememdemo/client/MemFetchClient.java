@@ -68,6 +68,22 @@ public class MemFetchClient {
             }
         }
     }
+    public void takeSnapshot2(OnTakeSnapshotCb onTakeSnapshotCb) {
+        if (iMemoStub != null) {
+            try {
+                this.onTakeSnapshotCb = onTakeSnapshotCb;
+                iMemoStub.takeSnapshot(new IMemCallback.Stub() {
+                    @Override
+                    public void onSnapshotCallback(ParcelFileDescriptor data, int length) throws RemoteException {
+                        snapshotCallback(data, length);
+                    }
+                });
+                iMemoStub.sendMessage("takeSnapshot2");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void sendTestMessageForCallback() {
         sendMessage("getMessage");
@@ -108,20 +124,17 @@ public class MemFetchClient {
         return clientConnection;
     }
 
-    private MemoryFile remoteFile;
-
     private void snapshotCallback(ParcelFileDescriptor data, int length) {
-        if (remoteFile == null) {
-            remoteFile = MemFileUtils.openMemoryFile(data, length, PROT_READ | PROT_WRITE);
-        }
+        MemoryFile remoteFile = MemFileUtils.openMemoryFile(data, length, PROT_READ | PROT_WRITE);
         if (remoteFile != null) {
             byte[] buffer = new byte[length];
             try {
                 remoteFile.readBytes(buffer, 0, 0, buffer.length);
-                Bitmap bitmap = BitmapUtil.Bytes2Bimap(buffer);
+                Bitmap bitmap = BitmapUtil.Bytes2Bitmap(buffer);
                 if (onTakeSnapshotCb != null) {
                     onTakeSnapshotCb.callback(bitmap);
                 }
+                remoteFile.close();
             } catch (IOException e) {
                 Log.e(TAG, "snapshotCallback", e);
             }
